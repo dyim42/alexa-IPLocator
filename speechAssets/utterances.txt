@@ -1,0 +1,6 @@
+DialogIPLocation get location for {One} dot {Two} dot {Three} dot {Four}
+DialogIPLocation where is {One} dot {Two} dot {Three} dot {Four}
+DialogIPLocation IP information for {One} dot {Two} dot {Three} dot {Four}
+DialogIPLocation IP info for {One} dot {Two} dot {Three} dot {Four}
+
+OneshotIPLocation {One} dot {Two} dot {Three} dot {Four}

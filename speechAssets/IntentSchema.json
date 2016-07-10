@@ -1,0 +1,35 @@
+{
+  "intents": [
+    {
+      "intent": "getIPLocation",
+      "slots": [
+        {
+          "name": "IP1",
+          "type": "AMAZON.NUMBER"
+        },
+        {
+          "name": "IP2",
+          "type": "AMAZON.NUMBER"
+        },
+        {
+          "name": "IP3",
+          "type": "AMAZON.NUMBER"
+        },
+        {
+          "name": "IP4",
+          "type": "AMAZON.NUMBER"
+        }
+      ]
+    },
+    {
+        "intent": "AMAZON.HelpIntent"
+    },
+    {
+        "intent": "AMAZON.StopIntent"
+    },
+    {
+        "intent": "AMAZON.CancelIntent"
+    }
+  ]
+}
+
