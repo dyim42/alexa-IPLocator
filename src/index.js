@@ -6,7 +6,7 @@ var APP_ID = undefined;
 // The Alexa prototype and helper functions
 var AlexaSkill = require('./AlexaSkill');
 var https = require( 'https' );
-var ip = require('./ip');
+var ip = require('ip');
 
 
 // GetIPLocation is a child of AlexaSkill
