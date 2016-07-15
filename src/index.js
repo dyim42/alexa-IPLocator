@@ -84,18 +84,23 @@ function spellOut(text) {
 function handleHelpRequest(response) {
     var repromptText = 'What ' + spellOut("IP") + ' address would you like to locate?';
     var speechOutput = 'You will need to provide an ' + spellOut('ipv4') + 'address. '
-                + 'For example, ' + spellOut("192.168.0.1") + '. '
+                + 'For example, ' + spellOut("8.8.8.8") + '. '
                 + repromptText
 
     response.ask(wrapSSML(speechOutput), wrapSSML(repromptText));
 }
 
 function handleOneshotIPLocationRequest(intent, session, response) {
+    var repromptText = 'What ' + spellOut("IP") + ' address would you like to locate?';
     var ipaddr = getIPFromIntent(intent);
     if (ipaddr.error) {
         console.log('IPAddress invalid: ' + ipaddr.value)
         var speechOutput = spellOut("IP") + 'address provided is invalid'
-        response.tell(wrapSSML(speechOutput));
+        response.ask(wrapSSML(speechOutput), wrapSSML(repromptText));
+    } else if (ip.isPrivate(ipaddr.value)) {
+        console.log('IPAddress is private: ' + ipaddr.value)
+        var speechOutput = spellOut("IP") + 'address provided is a private address. Please try again.'
+        response.ask(wrapSSML(speechOutput), wrapSSML(repromptText));
     }
     getFinalLocationResponse(ipaddr.value, response);
 }
@@ -133,7 +138,7 @@ function getFinalLocationResponse(ipaddr, response) {
         var speechOutput;
         console.log("ipaddr: " + JSON.stringify(ipaddr));
 
-        if (err) {
+        if (err || !locationResponse.countryName) {
             speechOutput = "Sorry, the location cannot be found. Please try again later";
         } else {
             speechOutput = "The " + ipaddr + " address is located in " + locationResponse.countryName;
