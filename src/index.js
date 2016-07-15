@@ -47,7 +47,6 @@ GetIPLocation.prototype.intentHandlers = {
         handleOneshotIPLocationRequest(intent, session, response);
     },
 
-
     "AMAZON.HelpIntent": function (intent, session, response) {
         handleHelpRequest(response);
     },
@@ -64,33 +63,39 @@ GetIPLocation.prototype.intentHandlers = {
 }
 
 function handleWelcomeRequest(response) {
-    var whichCityPrompt = "Which eye pee address would you like to locate?",
-        speechOutput = {
-            speech: "<speak>Welcome to IP Locator.</speak>",
-            type: AlexaSkill.speechOutputType.SSML
-        },
-        repromptOutput = {
-            speech: "You will need to provide an eye pee address.",
-            type: AlexaSkill.speechOutputType.PLAIN_TEXT
-        };
+    var speechOutput = 'Welcome to ' + spellOut("IP") + ' locator. '
+                     + 'Which ' + spellOut("IP") + ' address would you like to locate? ',
+        repromptOutput = 'You will need to provide an ' + spellOut("IP") + ' address.'
 
-    response.ask(speechOutput, repromptOutput);
+    response.ask(wrapSSML(speechOutput), wrapSSML(repromptOutput));
+}
+
+function wrapSSML(text) {
+    return {
+        speech: '<speak>' + text + '</speak>',
+        type: AlexaSkill.speechOutputType.SSML
+    }
+}
+
+function spellOut(text) {
+    return '<say-as interpret-as="spell-out">' + text + '</say-as>';
 }
 
 function handleHelpRequest(response) {
-    var repromptText = "What I P address would you like to locate?";
-    var speechOutput = "You will need to provide an I P V 4 address"
-        + " for example, 192 dot 168 dot 0 dot 1. "
-        + repromptText;
+    var repromptText = 'What ' + spellOut("IP") + ' address would you like to locate?';
+    var speechOutput = 'You will need to provide an ' + spellOut('ipv4') + 'address. '
+                + 'For example, ' + spellOut("192.168.0.1") + '. '
+                + repromptText
 
-    response.ask(speechOutput, repromptText);
+    response.ask(wrapSSML(speechOutput), wrapSSML(repromptText));
 }
 
 function handleOneshotIPLocationRequest(intent, session, response) {
-
     var ipaddr = getIPFromIntent(intent);
     if (ipaddr.error) {
         console.log('IPAddress invalid: ' + ipaddr.value)
+        var speechOutput = spellOut("IP") + 'address provided is invalid'
+        response.tell(wrapSSML(speechOutput));
     }
     getFinalLocationResponse(ipaddr.value, response);
 }
@@ -131,7 +136,7 @@ function getFinalLocationResponse(ipaddr, response) {
         if (err) {
             speechOutput = "Sorry, the location cannot be found. Please try again later";
         } else {
-            speechOutput = "The " + ipaddr + " is located in " + locationResponse.countryName;
+            speechOutput = "The " + ipaddr + " address is located in " + locationResponse.countryName;
         }
 
         response.tellWithCard(speechOutput, "GetIPLocation", speechOutput);
@@ -159,5 +164,7 @@ function getIPFromIntent(intent) {
 
 exports.handler = function(event, context) {
     var getIPLocation = new GetIPLocation();
+    console.log("handler.event: " + JSON.stringify(event));
+    console.log("handler.context: " + JSON.stringify(context));
     getIPLocation.execute(event, context);
 }
