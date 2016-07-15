@@ -1,35 +1,55 @@
 {
   "intents": [
-    {
-      "intent": "getIPLocation",
-      "slots": [
         {
-          "name": "IP1",
-          "type": "AMAZON.NUMBER"
+            "intent": "OneshotIPLocation",
+            "slots": [
+                {
+                    "name": "One",
+                    "type": "AMAZON.NUMBER"
+                },
+                {
+                    "name": "Two",
+                    "type": "AMAZON.NUMBER"
+                },
+                {
+                    "name": "Three",
+                    "type": "AMAZON.NUMBER"
+                },
+                {
+                    "name": "Four",
+                    "type": "AMAZON.NUMBER"
+                }
+            ]
         },
         {
-          "name": "IP2",
-          "type": "AMAZON.NUMBER"
+            "intent": "DialogIPLocation",
+            "slots": [
+                {
+                    "name": "One",
+                    "type": "AMAZON.NUMBER"
+                },
+                {
+                    "name": "Two",
+                    "type": "AMAZON.NUMBER"
+                },
+                {
+                    "name": "Three",
+                    "type": "AMAZON.NUMBER"
+                },
+                {
+                    "name": "Four",
+                    "type": "AMAZON.NUMBER"
+                }
+            ]
         },
         {
-          "name": "IP3",
-          "type": "AMAZON.NUMBER"
-        },
-        {
-          "name": "IP4",
-          "type": "AMAZON.NUMBER"
-        }
-      ]
-    },
-    {
         "intent": "AMAZON.HelpIntent"
-    },
-    {
+        },
+        {
         "intent": "AMAZON.StopIntent"
-    },
-    {
+        },
+        {
         "intent": "AMAZON.CancelIntent"
-    }
-  ]
+        }
+	]
 }
-
