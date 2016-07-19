@@ -93,38 +93,33 @@ function handleHelpRequest(response) {
 function handleOneshotIPLocationRequest(intent, session, response) {
     var repromptText = 'What ' + spellOut("IP") + ' address would you like to locate?';
     var ipaddr = getIPFromIntent(intent);
-    if (ipaddr.error) {
-        console.log('IPAddress invalid: ' + ipaddr.value)
-        var speechOutput = spellOut("IP") + 'address provided is invalid'
+    if (ipaddr.error.value) {
+        var speechOutput = ipaddr.error.message + repromptText;
         response.ask(wrapSSML(speechOutput), wrapSSML(repromptText));
-    } else if (ip.isPrivate(ipaddr.value)) {
-        console.log('IPAddress is private: ' + ipaddr.value)
-        var speechOutput = spellOut("IP") + 'address provided is a private address. Please try again.'
-        response.ask(wrapSSML(speechOutput), wrapSSML(repromptText));
+    } else  {
+        getFinalLocationResponse(ipaddr.value, response);
     }
-    getFinalLocationResponse(ipaddr.value, response);
 }
 
-function makeLocationRequest(ipaddr, cb) {
+function makeLocationRequest(ipaddr, callback) {
     var url = 'https://api.ip2country.info/ip?' + ipaddr;
-    console.log("http_ipaddr: " + ipaddr.value);
+    console.log("makeLocationRequest.url: " + url);
 
     https.get(url, function(res) {
         console.log('Status Code: ' + res.statusCode);
 
         if (res.statusCode != 200) {
-            cb(new Error("Non 200 Response"));
+            callback(new Error("Non 200 Response"));
         }
 
         res.on( 'data', function( data ) {
             var content = JSON.parse(data);
-            // var text = 'The location of the IP is ' + content.countryName;
-            // console.log(text);
-            // output( text, context );
+
             if (content.error) {
-             console.log('ip2country error: ' + content.error.message);
+                console.log('ip2country error: ' + content.error.message);
+
             } else {
-                cb(null, content);
+                callback(null, content);
             }
         });
     }).on('error', function(err) {
@@ -150,21 +145,38 @@ function getFinalLocationResponse(ipaddr, response) {
 
 // Gets the city from the intent or returns error
 function getIPFromIntent(intent) {
+    // Extracts IP address from intent and returns IP address and errors if any
     var ipaddr = [intent.slots.One.value,
                   intent.slots.Two.value,
                   intent.slots.Three.value,
                   intent.slots.Four.value].join('.');
+    result = {
+        error: {
+            value: false,
+            message: ""
+        },
+        value: ipaddr
+    };
+
     if (ip.isV4Format(ipaddr)) {
-        return {
-            error: false,
-            value: ipaddr
-        }
+        // pass, default values are OK
     } else {
-        return {
-            error: true,
-            value: ipaddr
-        }
+        console.log('IPAddress invalid: ' + ipaddr.value);
+        result.error.value = true;
+        result.error.message =  spellOut("IP") + " address is not valid. ";
+
+        // Return early if failed basic IP address check
+        return result;
     }
+
+    // Check if ipaddr is private. Modify results if isPrivate
+    if (ip.isPrivate(ipaddr)) {
+        console.log('IPAddress is private: ' + ipaddr.value);
+        result.error.value = true;
+        result.error.message = spellOut("IP") + " address is private. ";
+    }
+
+    return result;
 }
 
 exports.handler = function(event, context) {
